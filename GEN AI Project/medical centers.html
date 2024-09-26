@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nearby Medical Centers</title>
+    <style>
+        body {
+            background-color: #6A0DAD;
+            font-family: Arial, sans-serif;
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        nav {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        nav a {
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            background-color: #9B59B6;
+            border-radius: 5px;
+            margin: 5px;
+        }
+
+        nav a:hover {
+            background-color: #8E44AD;
+        }
+
+        .medical-centers-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .center-card {
+            background-color: #8E44AD;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px;
+            width: 300px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+            text-align: center;
+        }
+
+        .center-card:hover {
+            transform: scale(1.05);
+        }
+
+        .center-card h3 {
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .center-card p {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        .map-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        #map {
+            height: 500px;
+            width: 100%;
+            max-width: 1000px;
+            border-radius: 15px;
+            border: 2px solid #8E44AD;
+        }
+        
+        .center-address {
+            color: white;
+            background-color: #8E44AD;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        a {
+            color: #FDFEFE;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #E1E1FF;
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="main.html">Home</a>
+        <a href="prediction.html">Disease Prediction</a>
+        <a href="diet.html">Diet Chart</a>
+        <a href="helpline.html">Helpline</a>
+        <a href="contact.html">Consultation</a>
+    </nav>
+
+    <h1>Nearby Medical Centers</h1>
+
+    <div class="medical-centers-container">
+        <div class="center-card">
+            <h3>City Hospital</h3>
+            <p>Specialties: Cardiology, Neurology, Orthopedics</p>
+            <p class="center-address">123 Main Street, Coimbatore</p>
+        </div>
+
+        <div class="center-card">
+            <h3>Green Valley Medical Center</h3>
+            <p>Specialties: Pediatrics, Dermatology, General Medicine</p>
+            <p class="center-address">456 Park Avenue, Coimbatore</p>
+        </div>
+
+        <div class="center-card">
+            <h3>Lotus Healthcare Clinic</h3>
+            <p>Specialties: ENT, Gynecology, General Surgery</p>
+            <p class="center-address">789 Blossom Road, Coimbatore</p>
+        </div>
+
+        <div class="center-card">
+            <h3>LifeCare Multi-Specialty Hospital</h3>
+            <p>Specialties: Oncology, Urology, Nephrology</p>
+            <p class="center-address">321 Wellness Lane, Coimbatore</p>
+        </div>
+    </div>
+
+    <div class="map-container">
+        <div id="map"></div>
+    </div>
+
+    <script>
+        function initMap() {
+            // Create a map centered in Coimbatore
+            var map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: 11.0168, lng: 76.9558},  // Coordinates for Coimbatore
+                zoom: 12
+            });
+
+            // Marker for City Hospital
+            var cityHospital = new google.maps.Marker({
+                position: {lat: 11.0199, lng: 76.9675},  // City Hospital coordinates
+                map: map,
+                title: 'City Hospital'
+            });
+
+            // Marker for Green Valley Medical Center
+            var greenValley = new google.maps.Marker({
+                position: {lat: 11.0251, lng: 76.9718},  // Green Valley Medical Center coordinates
+                map: map,
+                title: 'Green Valley Medical Center'
+            });
+
+            // Marker for Lotus Healthcare Clinic
+            var lotusClinic = new google.maps.Marker({
+                position: {lat: 11.0333, lng: 76.9792},  // Lotus Healthcare Clinic coordinates
+                map: map,
+                title: 'Lotus Healthcare Clinic'
+            });
+
+            // Marker for LifeCare Multi-Specialty Hospital
+            var lifeCare = new google.maps.Marker({
+                position: {lat: 11.0105, lng: 76.9583},  // LifeCare Multi-Specialty Hospital coordinates
+                map: map,
+                title: 'LifeCare Multi-Specialty Hospital'
+            });
+        }
+    </script>
+
+    <!-- Google Maps API Integration -->
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap">
+    </script>
+
+</body>
+</html>

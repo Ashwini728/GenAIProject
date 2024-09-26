@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Prediction</title>
+    <style>
+        body {
+            background-color: #8A2BE2; /* Violet background */
+            font-family: Arial, sans-serif;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 50%;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #4A148C; /* Darker Violet Background */
+            border-radius: 10px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #FFD700;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin: 15px 0 5px 0;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #FFD700;
+            color: #4A148C;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #FFC107;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #6A1B9A;
+            border-radius: 8px;
+        }
+
+        .result h3 {
+            color: #FFD700;
+        }
+        body {
+            background-color: #6A0DAD; /* Violet background */
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        nav {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        nav a {
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            background-color: #9B59B6; /* Navigation button color */
+            border-radius: 5px;
+            margin: 5px;
+        }
+        nav a:hover {
+            background-color: #8E44AD; /* Darker shade on hover */
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="main.html">Home</a>
+        <a href="prediction.html">Disease Prediction</a>
+        <a href="diet.html">Diet Chart</a>
+        <a href="contact.html">Contact Us</a>
+    </nav>
+
+
+    <div class="container">
+        <h2>Disease Prediction System</h2>
+
+        <!-- Symptoms input form -->
+        <form id="predictionForm">
+            <label for="symptoms">Enter Your Symptoms (separated by commas)</label>
+            <textarea id="symptoms" rows="4" placeholder="e.g., cough, fever, sore throat"></textarea>
+            
+            <button type="button" onclick="predictDisease()">Predict Disease</button>
+        </form>
+
+        <!-- Result area -->
+        <div id="result" class="result" style="display: none;">
+            <h3>Prediction Result:</h3>
+            <p id="disease"></p>
+            <p id="level"></p>
+            <p id="medicines"></p>
+        </div>
+    </div>
+
+    <script>
+        // Disease data with prescription information
+        const diseaseData = {
+            "common cold": {
+                symptoms: ["cough", "sore throat", "runny nose", "fever"],
+                level: "Mild",
+                medicines: [
+                    { name: "Rest", prescription: false },
+                    { name: "Fluids", prescription: false },
+                    { name: "Paracetamol", prescription: false }
+                ]
+            },
+            "flu": {
+                symptoms: ["fever", "cough", "body ache", "fatigue"],
+                level: "Moderate",
+                medicines: [
+                    { name: "Antiviral drugs", prescription: true },
+                    { name: "Rest", prescription: false },
+                    { name: "Hydration", prescription: false }
+                ]
+            },
+            "covid-19": {
+                symptoms: ["fever", "dry cough", "difficulty breathing", "loss of taste"],
+                level: "Severe",
+                medicines: [
+                    { name: "Quarantine", prescription: false },
+                    { name: "Antiviral medication", prescription: true },
+                    { name: "Consult a doctor", prescription: false }
+                ]
+            },
+            "pneumonia": {
+                symptoms: ["cough", "chest pain", "fever", "shortness of breath"],
+                level: "Severe",
+                medicines: [
+                    { name: "Antibiotics", prescription: true },
+                    { name: "Hospital care", prescription: true },
+                    { name: "Oxygen therapy", prescription: true }
+                ]
+            },
+            "bronchitis": {
+                symptoms: ["cough", "mucus", "fatigue", "shortness of breath"],
+                level: "Moderate",
+                medicines: [
+                    { name: "Cough medicine", prescription: false },
+                    { name: "Inhalers", prescription: true },
+                    { name: "Rest", prescription: false }
+                ]
+            },
+            "asthma": {
+                symptoms: ["shortness of breath", "wheezing", "chest tightness", "cough"],
+                level: "Chronic",
+                medicines: [
+                    { name: "Inhalers", prescription: true },
+                    { name: "Corticosteroids", prescription: true },
+                    { name: "Bronchodilators", prescription: true }
+                ]
+            },
+            "migraine": {
+                symptoms: ["headache", "nausea", "light sensitivity", "blurred vision"],
+                level: "Moderate",
+                medicines: [
+                    { name: "Pain relievers", prescription: false },
+                    { name: "Anti-nausea drugs", prescription: true },
+                    { name: "Triptans", prescription: true }
+                ]
+            },
+            "diabetes": {
+                symptoms: ["increased thirst", "frequent urination", "fatigue", "blurred vision"],
+                level: "Chronic",
+                medicines: [
+                    { name: "Insulin", prescription: true },
+                    { name: "Oral diabetes medications", prescription: true },
+                    { name: "Lifestyle changes", prescription: false }
+                ]
+            },
+            "hypertension": {
+                symptoms: ["headache", "shortness of breath", "nosebleeds", "dizziness"],
+                level: "Chronic",
+                medicines: [
+                    { name: "Antihypertensive medications", prescription: true },
+                    { name: "Lifestyle changes", prescription: false }
+                ]
+            },
+            "tuberculosis": {
+                symptoms: ["persistent cough", "chest pain", "weight loss", "fever"],
+                level: "Severe",
+                medicines: [
+                    { name: "Antibiotics", prescription: true },
+                    { name: "Long-term medication", prescription: true }
+                ]
+            },
+            "malaria": {
+                symptoms: ["fever", "chills", "headache", "muscle pain"],
+                level: "Severe",
+                medicines: [
+                    { name: "Antimalarial drugs", prescription: true },
+                    { name: "Hospital care", prescription: true }
+                ]
+            },
+            "typhoid": {
+                symptoms: ["fever", "abdominal pain", "fatigue", "headache"],
+                level: "Severe",
+                medicines: [
+                    { name: "Antibiotics", prescription: true },
+                    { name: "Hydration therapy", prescription: false }
+                ]
+            },
+            "hepatitis A": {
+                symptoms: ["jaundice", "fatigue", "nausea", "abdominal pain"],
+                level: "Moderate",
+                medicines: [
+                    { name: "Rest", prescription: false },
+                    { name: "Hydration", prescription: false },
+                    { name: "Avoid alcohol", prescription: false }
+                ]
+            },
+            "hepatitis B": {
+                symptoms: ["jaundice", "abdominal pain", "joint pain", "dark urine"],
+                level: "Chronic",
+                medicines: [
+                    { name: "Antiviral drugs", prescription: true },
+                    { name: "Lifestyle changes", prescription: false },
+                    { name: "Liver monitoring", prescription: false }
+                ]
+            },
+            "hepatitis C": {
+                symptoms: ["jaundice", "abdominal swelling", "fatigue", "nausea"],
+                level: "Chronic",
+                medicines: [
+                    { name: "Antiviral therapy", prescription: true },
+                    { name: "Liver monitoring", prescription: false }
+                ]
+            },
+            "dengue": {
+                symptoms: ["fever", "rash", "joint pain", "bleeding gums"],
+                level: "Severe",
+                medicines: [
+                    { name: "Pain relievers", prescription: false },
+                    { name: "Hydration", prescription: false },
+                    { name: "Hospital care", prescription: true }
+                ]
+            },
+            "chickenpox": {
+                symptoms: ["fever", "rash", "itching", "fatigue"],
+                level: "Moderate",
+                medicines: [
+                    { name: "Antihistamines", prescription: false },
+                    { name: "Pain relievers", prescription: false },
+                    { name: "Calamine lotion", prescription: false }
+                ]
+            },
+            "measles": {
+                symptoms: ["fever", "rash", "cough", "runny nose"],
+                level: "Severe",
+                medicines: [
+                    { name: "Vitamin A", prescription: false },
+                    { name: "Pain relievers", prescription: false },
+                    { name: "Hydration", prescription: false }
+                ]
+            },
+            "mumps": {
+                symptoms: ["swollen glands", "fever", "headache", "muscle pain"],
+                level: "Moderate",
+                medicines: [
+                    { name: "Pain relievers", prescription: false },
+                    { name: "Rest", prescription: false },
+                    { name: "Hydration", prescription: false }
+                ]
+            },
+            "rheumatoid arthritis": {
+                symptoms: ["joint pain", "swelling", "stiffness", "fatigue"],
+                level: "Chronic",
+                medicines: [
+                    { name: "DMARDs", prescription: true },
+                    { name: "Pain relievers", prescription: false },
+                    { name: "Physical therapy", prescription: false }
+                ]
+            },
+            "osteoarthritis": {
+                symptoms: ["joint pain", "stiffness", "swelling", "loss of flexibility"],
+                level: "Chronic",
+                medicines: [
+                    { name: "Pain relievers", prescription: false },
+                    { name: "Physical therapy", prescription: false }
+                ]
+            },
+            "gout": {
+                symptoms: ["sudden joint pain", "swelling", "redness", "fever"],
+                level: "Moderate",
+                medicines: [
+                    { name: "Anti-inflammatory drugs", prescription: false },
+                    { name: "Colchicine", prescription: true }
+                ]
+            },
+            "eczema": {
+                symptoms: ["dry skin", "itching", "redness", "inflammation"],
+                level: "Moderate",
+                medicines: [
+                    { name: "Topical steroids", prescription: true },
+                    { name: "Moisturizers", prescription: false }
+                ]
+            },
+            "psoriasis": {
+                symptoms: ["red patches", "itching", "thickened skin", "scaly skin"],
+                level: "Chronic",
+                medicines: [
+                    { name: "Topical treatments", prescription: true },
+                    { name: "Phototherapy", prescription: true }
+                ]
+            },
+            "allergies": {
+                symptoms: ["sneezing", "itchy eyes", "runny nose", "rash"],
+                level: "Mild",
+                medicines: [
+                    { name: "Antihistamines", prescription: false },
+                    { name: "Nasal spray", prescription: false }
+                ]
+            },
+            "anemia": {
+                symptoms: ["fatigue", "pale skin", "shortness of breath", "dizziness"],
+                level: "Moderate",
+                medicines: [
+                    { name: "Iron supplements", prescription: false },
+                    { name: "Vitamin B12", prescription: false }
+                ]
+            },
+            "hyperlipidemia": {
+                symptoms: ["fatigue", "chest pain", "shortness of breath", "nausea"],
+                level: "Chronic",
+                medicines: [
+                    { name: "Statins", prescription: true },
+                    { name: "Lifestyle changes", prescription: false }
+                ]
+            },
+            "chronic obstructive pulmonary disease (COPD)": {
+                symptoms: ["shortness of breath", "chronic cough", "wheezing", "fatigue"],
+                level: "Chronic",
+                medicines: [
+                    { name: "Bronchodilators", prescription: true },
+                    { name: "Steroids", prescription: true }
+                ]
+            },
+            "congestive heart failure": {
+                symptoms: ["shortness of breath", "fatigue", "swelling", "rapid heartbeat"],
+                level: "Severe",
+                medicines: [
+                    { name: "Diuretics", prescription: true },
+                    { name: "ACE inhibitors", prescription: true },
+                    { name: "Beta-blockers", prescription: true }
+                ]
+            },
+            "anxiety disorder": {
+                symptoms: ["excessive worry", "restlessness", "fatigue", "difficulty sleeping"],
+                level: "Moderate",
+                medicines: [
+                    { name: "Anti-anxiety medications", prescription: true },
+                    { name: "Therapy", prescription: false }
+                ]
+            },
+            "bipolar disorder": {
+                symptoms: ["mood swings", "energy fluctuations", "difficulty concentrating", "restlessness"],
+                level: "Chronic",
+                medicines: [
+                    { name: "Mood stabilizers", prescription: true },
+                    { name: "Antipsychotic medications", prescription: true }
+                ]
+            },
+            "schizophrenia": {
+                symptoms: ["hallucinations", "delusions", "disorganized thinking", "mood changes"],
+                level: "Severe",
+                medicines: [
+                    { name: "Antipsychotic medications", prescription: true },
+                    { name: "Therapy", prescription: false }
+                ]
+            },
+            "obsessive-compulsive disorder (OCD)": {
+                symptoms: ["intrusive thoughts", "compulsive behavior", "anxiety", "distress"],
+                level: "Moderate",
+                medicines: [
+                    { name: "SSRIs", prescription: true },
+                    { name: "Cognitive Behavioral Therapy", prescription: false }
+                ]
+            },
+            "post-traumatic stress disorder (PTSD)": {
+                symptoms: ["flashbacks", "nightmares", "anxiety", "irritability"],
+                level: "Moderate",
+                medicines: [
+                    { name: "Antidepressants", prescription: true },
+                    { name: "Therapy", prescription: false }
+                ]
+            },
+            "dementia": {
+                symptoms: ["memory loss", "confusion", "difficulty with language", "changes in mood"],
+                level: "Severe",
+                medicines: [
+                    { name: "Cognitive enhancers", prescription: true },
+                    { name: "Therapy", prescription: false }
+                ]
+            },
+            "Alzheimer's disease": {
+                symptoms: ["memory loss", "difficulty in thinking", "disorientation", "mood changes"],
+                level: "Severe",
+                medicines: [
+                    { name: "Cholinesterase inhibitors", prescription: true },
+                    { name: "Memantine", prescription: true }
+                ]
+            },
+            "Parkinson's disease": {
+                symptoms: ["tremors", "stiffness", "slowed movement", "balance problems"],
+                level: "Chronic",
+                medicines: [
+                    { name: "Levodopa", prescription: true },
+                    { name: "Dopamine agonists", prescription: true }
+                ]
+            },
+            "multiple sclerosis": {
+                symptoms: ["fatigue", "numbness", "difficulty walking", "muscle spasms"],
+                level: "Chronic",
+                medicines: [
+                    { name: "Immunosuppressants", prescription: true },
+                    { name: "Physical therapy", prescription: false }
+                ]
+            },
+            "lupus": {
+                symptoms: ["fatigue", "joint pain", "fever", "skin rashes"],
+                level: "Chronic",
+                medicines: [
+                    { name: "Corticosteroids", prescription: true },
+                    { name: "Antimalarial drugs", prescription: true }
+                ]
+            },
+            "sickle cell anemia": {
+                symptoms: ["pain episodes", "swelling", "fatigue", "frequent infections"],
+                level: "Chronic",
+                medicines: [
+                    { name: "Pain relievers", prescription: false },
+                    { name: "Hydroxyurea", prescription: true }
+                ]
+            },
+            "hemophilia": {
+                symptoms: ["prolonged bleeding", "easy bruising", "joint pain", "fatigue"],
+                level: "Chronic",
+                medicines: [
+                    { name: "Clotting factor concentrates", prescription: true },
+                    { name: "Pain relievers", prescription: false }
+                ]
+            },
+            "cystic fibrosis": {
+                symptoms: ["persistent cough", "difficulty breathing", "poor growth", "frequent lung infections"],
+                level: "Chronic",
+                medicines: [
+                    { name: "Enzyme supplements", prescription: true },
+                    { name: "Mucus thinners", prescription: true }
+                ]
+            },
+            "thrombosis": {
+                symptoms: ["swelling", "pain", "redness", "warmth"],
+                level: "Severe",
+                medicines: [
+                    { name: "Anticoagulants", prescription: true },
+                    { name: "Compression stockings", prescription: false }
+                ]
+            },
+            "sciatica": {
+                symptoms: ["lower back pain", "leg pain", "numbness", "tingling"],
+                level: "Moderate",
+                medicines: [
+                    { name: "Pain relievers", prescription: false },
+                    { name: "Physical therapy", prescription: false }
+                ]
+            },
+            "carpal tunnel syndrome": {
+                symptoms: ["numbness", "tingling", "pain", "weakness"],
+                level: "Moderate",
+                medicines: [
+                    { name: "Wrist splint", prescription: false },
+                    { name: "Corticosteroids", prescription: true }
+                ]
+            },
+            "tendinitis": {
+                symptoms: ["pain", "tenderness", "swelling", "stiffness"],
+                level: "Moderate",
+                medicines: [
+                    { name: "Rest", prescription: false },
+                    { name: "Pain relievers", prescription: false }
+                ]
+            },
+            "osteoarthritis": {
+                symptoms: ["joint pain", "stiffness", "swelling", "difficulty moving"],
+                level: "Chronic",
+                medicines: [
+                    { name: "Pain relievers", prescription: false },
+                    { name: "Physical therapy", prescription: false }
+                ]
+            },
+            "chronic back pain": {
+                symptoms: ["persistent pain", "muscle tightness", "reduced flexibility"],
+                level: "Chronic",
+                medicines: [
+                    { name: "Pain relievers", prescription: false },
+                    { name: "Physical therapy", prescription: false }
+                ]
+            },
+            "fibromyalgia": {
+                symptoms: ["widespread pain", "fatigue", "sleep problems", "cognitive difficulties"],
+                level: "Chronic",
+                medicines: [
+                    { name: "Pain relievers", prescription: false },
+                    { name: "Antidepressants", prescription: true }
+                ]
+            },
+            "hypothyroidism": {
+                symptoms: ["fatigue", "weight gain", "cold intolerance", "dry skin"],
+                level: "Chronic",
+                medicines: [
+                    { name: "Levothyroxine", prescription: true },
+                    { name: "Regular monitoring", prescription: false }
+                ]
+            },
+            "hyperthyroidism": {
+                symptoms: ["weight loss", "rapid heartbeat", "nervousness", "sweating"],
+                level: "Chronic",
+                medicines: [
+                    { name: "Antithyroid medications", prescription: true },
+                    { name: "Beta-blockers", prescription: true }
+                ]
+            },
+            "gestational diabetes": {
+                symptoms: ["high blood sugar", "fatigue", "frequent urination"],
+                level: "Moderate",
+                medicines: [
+                    { name: "Insulin", prescription: true },
+                    { name: "Diet management", prescription: false }
+                ]
+            },
+            "polycystic ovary syndrome (PCOS)": {
+                symptoms: ["irregular periods", "weight gain", "excess hair growth"],
+                level: "Chronic",
+                medicines: [
+                    { name: "Hormonal birth control", prescription: true },
+                    { name: "Metformin", prescription: true }
+                ]
+            },
+            "endometriosis": {
+                symptoms: ["pelvic pain", "painful periods", "pain during intercourse"],
+                level: "Chronic",
+                medicines: [
+                    { name: "Pain relievers", prescription: false },
+                    { name: "Hormonal therapy", prescription: true }
+                ]
+            },
+            "ovarian cysts": {
+                symptoms: ["pelvic pain", "pain during intercourse", "irregular periods"],
+                level: "Moderate",
+                medicines: [
+                    { name: "Pain relievers", prescription: false },
+                    { name: "Hormonal contraceptives", prescription: true }
+                ]
+            },
+            "prostate problems": {
+                symptoms: ["urinary difficulties", "pain", "frequent urination"],
+                level: "Moderate",
+                medicines: [
+                    { name: "Alpha-blockers", prescription: true },
+                    { name: "Lifestyle changes", prescription: false }
+                ]
+            },
+            "erectile dysfunction": {
+                symptoms: ["difficulty maintaining an erection", "reduced sexual desire"],
+                level: "Moderate",
+                medicines: [
+                    { name: "PDE5 inhibitors", prescription: true },
+                    { name: "Lifestyle changes", prescription: false }
+                ]
+            }
+        };
+
+        function predictDisease() {
+            const symptomsInput = document.getElementById('symptoms').value;
+            const symptomsArray = symptomsInput.split(',').map(symptom => symptom.trim());
+            let predictedDisease = null;
+
+            for (const disease in diseaseData) {
+                const diseaseSymptoms = diseaseData[disease].symptoms;
+                const matchedSymptoms = symptomsArray.filter(symptom => diseaseSymptoms.includes(symptom));
+                
+                if (matchedSymptoms.length > 0) {
+                    predictedDisease = disease;
+                    break;
+                }
+            }
+
+            displayResult(predictedDisease);
+        }
+
+        function displayResult(disease) {
+            const resultDiv = document.getElementById('result');
+            const diseaseParagraph = document.getElementById('disease');
+            const levelParagraph = document.getElementById('level');
+            const medicinesParagraph = document.getElementById('medicines');
+
+            if (disease) {
+                diseaseParagraph.innerText = `Possible Disease: ${disease}`;
+                levelParagraph.innerText = `Severity Level: ${diseaseData[disease].level}`;
+                
+                const medicines = diseaseData[disease].medicines.map(med => {
+                    return `${med.name}${med.prescription ? ' (Prescription Required)' : ''}`;
+                }).join(', ');
+
+                medicinesParagraph.innerText = `Recommended Medicines: ${medicines}`;
+                resultDiv.style.display = 'block';
+            } else {
+                diseaseParagraph.innerText = `No disease predicted based on the provided symptoms.`;
+                levelParagraph.innerText = '';
+                medicinesParagraph.innerText = '';
+                resultDiv.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
